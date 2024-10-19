@@ -1,0 +1,41 @@
+version: '2.1'
+services:
+  db:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - 3307:3306
+    volumes:
+      - my-db:/var/lib/mysql
+    networks:
+      - projectmgmt
+   
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    restart: always
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - 8082:80
+    networks:
+      - projectmgmt
+
+networks:
+  projectmgmt:
+    driver: bridge
+
+volumes:
+  my-db:
+
+
+
+
+  
+# Names our volume
