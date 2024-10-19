@@ -30,6 +30,10 @@ const TaskModel = sequelize.define('Task', {
   priority: {
     type: Sequelize.ENUM('Low', 'Medium','High'),
     defaultValue: 'Low',
+  },
+  label: {
+    type: Sequelize.ENUM('Bug', 'Feature','Enhancement'),
+    defaultValue: 'Feature',
   }
 });
 

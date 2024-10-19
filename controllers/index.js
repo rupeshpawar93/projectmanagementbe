@@ -1,6 +1,6 @@
 'use strict'
 
-import UserController from "./user-controller.js";
+import UserController from "./userController.js";
 
 export {
     UserController

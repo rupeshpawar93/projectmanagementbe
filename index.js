@@ -2,8 +2,11 @@
 
 import express from 'express';
 import helmet from 'helmet';
+import cors from 'cors';
 import bodyParser from 'body-parser'
 import Routes from './routes/index.js'
+import { configDotenv } from 'dotenv';
+import { constantVariables } from './utilties/index.js';
 configDotenv();
 
 const app = express();
