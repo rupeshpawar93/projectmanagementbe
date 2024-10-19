@@ -12,18 +12,16 @@ const UserController = {
   
 async function signUp (req, res, next) {
     const data = await UserModel.create(req.body);
+    console.log("----------data", data);
     const responseBody = new ResponseBody(200, 'User Successful created', data)
     res.body = responseBody
+    console.log("----responseBody", responseBody);
     process.nextTick(next)
-
 }
 
 async function signIn (req, res, next) {
-    const { email, mobileNumber } = req.body;
-    if(!username) {
-        return res.status(400).json({error: [{status: false, msg: "Please provide username!", path: "username"}]})
-    }
-
+    const { username, password } = req.body;
+    
     const user = await UserModel.findOne({ where: { username: req.body.username,  active: true } });
         
     if (!user) {

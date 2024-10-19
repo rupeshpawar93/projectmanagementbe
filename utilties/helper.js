@@ -18,19 +18,18 @@ export class ResponseBody {
 }
 
 export const handleResponse = (request, response, next) => {
-    const resBody = response.body || {}
-    const { statusCode } = resBody
-    const handler = ([301, 302].indexOf(statusCode) > -1)
-      ? ""
-      : sendResponse
+  const resBody = response.body || {}
+  const { statusCode } = resBody
+  const handler = ([301, 302].indexOf(statusCode) > -1)
+    ? ""
+    : sendResponse
 
-    handler(request, response, next)
+  handler(request, response, next)
 }
 
 const sendResponse = (request, response, next)=> {
   let resBody = response.body || {}
   const { statusCode } = resBody
-
   if (!resBody || !statusCode) {
     resBody = new ResponseBody(500, 'Response Data Not Found!')
   }
@@ -38,14 +37,18 @@ const sendResponse = (request, response, next)=> {
 }
 
 export const validate = (req, res, next) => {
-    const errors = validationResult(req);
+  const errors = validationResult(req);
+  // if there is error then return Error
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      errors: errors.array(),
+    });
+  }
+  next()
+};
 
-    // if there is error then return Error
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        errors: errors.array(),
-      });
-    }
-    next()
-  };
+export const routeSanity = (request, response, next) => {
+    request.isMatched = true
+    process.nextTick(next)
+};

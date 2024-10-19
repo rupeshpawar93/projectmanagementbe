@@ -1,11 +1,14 @@
 'use strict'
 
 import { ResponseBody, handleResponse } from '../utilties/index.js'
-import UserRouter from './user-route.js'
+import UserRouter from './userRoute.js'
+import ProjectRouter from './projectRoute.js'
+import TaskRouter from './taskRoute.js'
 
 const Routes = [
   { path: '/user', router: UserRouter },
- 
+  { path: '/project', router: ProjectRouter },
+  { path: '/task', router: TaskRouter }
 ]
 
 Routes.init = (app) => {
