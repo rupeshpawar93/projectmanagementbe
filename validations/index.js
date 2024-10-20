@@ -1,8 +1,10 @@
 'use strict'
 
-import { UserSignInValidator, UserSignUpValidator } from './user-validation.js'
+import { UserSignInValidator, UserSignUpValidator } from './userValidation.js'
+import { ProjectValidator } from './projectValidation.js'
 
 export {
     UserSignInValidator, 
-    UserSignUpValidator
+    UserSignUpValidator,
+    ProjectValidator
 }

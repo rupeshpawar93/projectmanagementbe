@@ -1,5 +1,6 @@
 // middleware/auth.js
 import jwt from 'jsonwebtoken';
+import { constantVariables } from '../utilties/index.js';
 const { JWT_SECRET } = process.env;
 
 // Middleware to generate JWT token
@@ -9,18 +10,23 @@ function generateToken(payload) {
 
 // Middleware to verify JWT token
 function verifyToken(req, res, next) {
-  const token = req.headers.authorization;
-  if (!token) {
-    return res.status(401).json({  status: false, msg: 'Authorization token is required' });
-  }
-
-  jwt.verify(token.split(" ")[1], JWT_SECRET, (err, decoded) => {
-    if (err) {
-      return res.status(401).json({ status: false, msg: 'Invalid token' });
-    }
-    req.user = decoded.id; // Set the decoded user object on the request object
+  if(constantVariables.EXCLUDE_URL_FROM_AUTH.includes(req.url)) {
+    console.log("----hit here");
     next();
-  });
+  } else {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res.status(401).json({  status: false, msg: 'Authorization token is required' });
+    }
+
+    jwt.verify(token.split(" ")[1], JWT_SECRET, (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ status: false, msg: 'Invalid token' });
+      }
+      req.user = decoded.id; // Set the decoded user object on the request object
+      next();
+    });
+  }
 }
 
 export { generateToken, verifyToken };

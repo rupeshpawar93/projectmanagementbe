@@ -7,6 +7,7 @@ import bodyParser from 'body-parser'
 import Routes from './routes/index.js'
 import { configDotenv } from 'dotenv';
 import { constantVariables } from './utilties/index.js';
+import { verifyToken } from './middlewares/auth.js';
 configDotenv();
 
 const app = express();
@@ -31,6 +32,7 @@ app.use(cors(corsOptions))
 app.use(bodyParser.json({ limit: constantVariables.BODY_LIMIT }))
 app.use(bodyParser.urlencoded({ limit: constantVariables.BODY_LIMIT, extended: true }))
 app.use(helmet())
+app.use(verifyToken);
 
 
 // Initialize Routes

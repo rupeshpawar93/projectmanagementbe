@@ -1,25 +1,35 @@
 'use strict'
 
 import { ProjectModel } from "../models/index.js";
+import { ResponseBody } from "../utilties/helper.js";
 
 const ProjectController = {
-    upsert,
+    create,
+    update,
     get,
     getById,
     remove
 }
 
-async function upsert(req,res,next) {
-    const [instances, created] = await ProjectModel.upsert(req.body);
-    if(created) {
-        const responseBody = new ResponseBody(200, 'Project Successful updated', created)
-        res.body = responseBody
-        process.nextTick(next)
-    }
-    const responseBody = new ResponseBody(200, 'Project Successful created', created)
+async function create(req,res,next) {
+    console.log("----------------user_id", req.user);
+    const response = await ProjectModel.create({...req.body, user_id:req.user});
+    const responseBody = new ResponseBody(200, 'Project Successful created', response)
     res.body = responseBody
     process.nextTick(next)
 }
+
+async function update(req,res,next) {
+    const { body, param } = req;
+    const { id } = param;
+    const response = await ProjectModel.update({...body}, {
+        where: {id}
+    });
+    const responseBody = new ResponseBody(200, 'Project Successful updated', response)
+    res.body = responseBody
+    process.nextTick(next)
+}
+
 
 async function get(req,res,next) {
     const response = await ProjectModel.find(req.body);

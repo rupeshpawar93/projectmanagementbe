@@ -27,6 +27,7 @@ const ProjectModel = sequelize.define('Project', {
 }, {
   indexes: [
     {
+      name: "nameIndex",
       unique: true,
       fields: ['name'],
     }
@@ -34,6 +35,6 @@ const ProjectModel = sequelize.define('Project', {
 });
 
 
-ProjectModel.belongsTo(UserModel);
+ProjectModel.belongsTo(UserModel, { foreignKey: 'user_id', as: 'user' });
 
 export default ProjectModel;

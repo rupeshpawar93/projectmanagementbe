@@ -38,6 +38,6 @@ const TaskModel = sequelize.define('Task', {
 });
 
 
-TaskModel.belongsTo(ProjectModel);
+TaskModel.belongsTo(ProjectModel,  { foreignKey: 'project_id', as: 'project' });
 
 export default TaskModel;
