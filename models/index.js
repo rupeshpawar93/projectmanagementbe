@@ -1,9 +1,12 @@
-import UserModel from "./user-model.js";
-import ProjectModel from "./project-model.js";
-import TaskModel from "./task-model.js";
+import User from './user.js';
+import Task from './task.js';
+import Project from './project.js';
+import ProjectUser from './projectUser.js';
 
+// Export all models as named exports
 export {
-    UserModel,
-    ProjectModel,
-    TaskModel
-}
+  User,
+  Task,
+  Project,
+  ProjectUser,
+};

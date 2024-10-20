@@ -1,6 +1,6 @@
 'use strict'
 
-import { ProjectModel } from "../models/index.js";
+import { ProjectModel } from "../services/sequelize.js";
 import { ResponseBody } from "../utilties/helper.js";
 
 const ProjectController = {
@@ -12,7 +12,6 @@ const ProjectController = {
 }
 
 async function create(req,res,next) {
-    console.log("----------------user_id", req.user);
     const response = await ProjectModel.create({...req.body, user_id:req.user});
     const responseBody = new ResponseBody(200, 'Project Successful created', response)
     res.body = responseBody
@@ -20,8 +19,8 @@ async function create(req,res,next) {
 }
 
 async function update(req,res,next) {
-    const { body, param } = req;
-    const { id } = param;
+    const { body, params } = req;
+    const { id } = params;
     const response = await ProjectModel.update({...body}, {
         where: {id}
     });
@@ -52,7 +51,7 @@ async function remove (req,res,next) {
         id: req.param.id,
       }})
    
-    const responseBody = new ResponseBody(200, 'Project deleted Successful')
+    const responseBody = new ResponseBody(200, 'Project deleted Successful', response)
     res.body = responseBody
     process.nextTick(next)
 }

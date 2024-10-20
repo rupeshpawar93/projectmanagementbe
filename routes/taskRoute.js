@@ -2,14 +2,15 @@ import Express from 'express'
 import { TaskController } from "../controllers/index.js";
 import { asyncWrapper, validate } from "../utilties/index.js";
 import { UserSignInValidator, UserSignUpValidator } from '../validations/index.js'
-import {verifyToken} from "../middlewares/auth.js"
+import {verifyToken, roleBasedAccess } from "../middlewares/index.js"
 
 const TaskRouter = new Express.Router()
-const { upsert, get, getById, remove } = TaskController
+const { create, update, get, getById, remove } = TaskController
 
-TaskRouter.put('/', UserSignInValidator, validate,  asyncWrapper(upsert));
-TaskRouter.get('/', UserSignUpValidator, validate,  asyncWrapper(get));
-TaskRouter.get('/:id', UserSignUpValidator, validate,  asyncWrapper(getById));
-TaskRouter.delete('/:id', UserSignUpValidator, validate,  asyncWrapper(remove));
+TaskRouter.post('/',roleBasedAccess(['admin', 'member']), UserSignInValidator, validate,  asyncWrapper(create));
+TaskRouter.patch('/:id',roleBasedAccess(['admin', 'member']), UserSignInValidator, validate,  asyncWrapper(update));
+TaskRouter.get('/',roleBasedAccess(['admin', 'member']),UserSignUpValidator, validate,  asyncWrapper(get));
+TaskRouter.get('/:id', roleBasedAccess(['admin', 'member']),UserSignUpValidator, validate,  asyncWrapper(getById));
+TaskRouter.delete('/:id',roleBasedAccess(['admin', 'member']), UserSignUpValidator, validate,  asyncWrapper(remove));
 
 export default TaskRouter;

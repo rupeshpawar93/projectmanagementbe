@@ -8,6 +8,7 @@ import Routes from './routes/index.js'
 import { configDotenv } from 'dotenv';
 import { constantVariables } from './utilties/index.js';
 import { verifyToken } from './middlewares/auth.js';
+import { sequelize } from './services/index.js';
 configDotenv();
 
 const app = express();

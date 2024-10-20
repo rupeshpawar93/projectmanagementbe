@@ -1,7 +1,7 @@
 'use strict'
 
 import bcrypt from 'bcrypt';
-import { UserModel } from "../models/index.js"
+import { UserModel } from "../services/index.js"
 import { ResponseBody } from "../utilties/index.js"
 import { generateToken } from "../middlewares/auth.js";
 
@@ -38,7 +38,7 @@ async function signIn (req, res, next) {
           error.statusCode = 400;
           return res.status(400).json({error: [{status: false, msg: "Password is wrong!", path:"password"}]})
     }
-    const token = generateToken({ id: user.id });
+    const token = generateToken({ id: user.id, role: user.role });
     const responseBody = new ResponseBody(200, 'User Signin Successful', {token});
     res.body = responseBody
     process.nextTick(next);

@@ -24,6 +24,7 @@ function verifyToken(req, res, next) {
         return res.status(401).json({ status: false, msg: 'Invalid token' });
       }
       req.user = decoded.id; // Set the decoded user object on the request object
+      req.role = decoded.role; // Set the decoded role from user object on the request object
       next();
     });
   }

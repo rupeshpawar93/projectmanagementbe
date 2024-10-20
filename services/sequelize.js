@@ -1,6 +1,8 @@
 
 import { Sequelize } from 'sequelize';
 import { config } from 'dotenv';
+// Initialize all models
+import { User, Task, Project, ProjectUser } from '../models/index.js';
 
 config();
 const __dirname = process.cwd();
@@ -13,20 +15,28 @@ const sequelize = new Sequelize({
     port: process.env.DB_PORT,
 });
 
+const UserModel = User(sequelize, Sequelize.DataTypes);
+const TaskModel = Task(sequelize, Sequelize.DataTypes);
+const ProjectModel = Project(sequelize, Sequelize.DataTypes);
+const ProjectUserModel = ProjectUser(sequelize, Sequelize.DataTypes);
+
 sequelize.authenticate().then(async (db) => {
     console.log('Connection has been established successfully.');
+    
+    ProjectModel.belongsTo(UserModel, { foreignKey: 'created_by'});
+    TaskModel.belongsTo(ProjectModel,  { foreignKey: 'project_id',});
+    TaskModel.belongsTo(UserModel,  { foreignKey: 'created_by'});
+    TaskModel.belongsTo(UserModel,  { foreignKey: 'assigned_to', allowNull: true });
+    ProjectModel.belongsToMany(UserModel, {through: ProjectUserModel, foreignKey: 'project_id'});
+    UserModel.belongsToMany(ProjectModel, { through: ProjectUserModel, foreignKey: 'user_id' });
+
     // Synchronize the model with the database
-    sequelize.sync({ alter: true })
-    .then(() => {
-    console.log('Event model synced with database');
-    })
-    .catch((err) => {
-    console.error('Error syncing Event model with database:', err);
-    });
+    await sequelize.sync({ alter: true })
+    console.log('Models synced with database');
  }).catch((error) => {
     console.error('Unable to connect to the database: ', error);
 });
 
 
-export default sequelize;
+export { sequelize, UserModel, ProjectModel, TaskModel, ProjectUserModel} ;
 

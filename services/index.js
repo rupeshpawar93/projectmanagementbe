@@ -1,5 +1,9 @@
-import sequelize from "./sequelize.js";
+import {sequelize, UserModel, ProjectModel, TaskModel, ProjectUserModel} from "./sequelize.js";
 
 export {
-    sequelize
+    sequelize,
+    UserModel, 
+    ProjectModel,
+    TaskModel,
+    ProjectUserModel
 }
