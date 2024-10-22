@@ -4,6 +4,7 @@ import { TaskModel } from "../services/sequelize.js";
 
 const TaskController = {
     create,
+    update,
     get,
     getById,
     remove
@@ -29,10 +30,20 @@ async function update(req,res,next) {
 
 
 async function get (req,res,next) {
-    const response = await TaskModel.find(req.body);
-    const responseBody = new ResponseBody(200, 'Task fetched Successful', response)
-    res.body = responseBody
-    process.nextTick(next)
+    const { pageNo = 1, pageSize = 10 } = req.query;
+    const condition = req.body
+    const response = await TaskModel.findAll({
+        where: {
+            ...condition
+        },
+        order: [['createdAt', 'DESC']],
+        limit: Number(pageSize),
+        offset: (Number(pageNo) - 1) * Number(pageSize)
+    });
+
+    const responseBody = new ResponseBody(200, 'Tasks fetched successfully', response);
+    res.body = responseBody;
+    process.nextTick(next);
 }
 
 async function getById (req,res,next) {
@@ -46,13 +57,23 @@ async function getById (req,res,next) {
 
 
 async function remove(req,res,next) {
-    const response = await TaskModel.destroy( {where : {
-        id: req.param.id,
-      }})
-   
-    const responseBody = new ResponseBody(200, 'TaskModel deleted Successful', response)
-    res.body = responseBody
-    process.nextTick(next)
+    try {
+        const response = await TaskModel.destroy({
+            where: {
+                id: req.params.id
+            }
+        });
+        if (response) {
+            const responseBody = new ResponseBody(200, 'Task deleted successfully');
+            res.body = responseBody;
+        } else {
+            const responseBody = new ResponseBody(404, 'Task not found');
+            res.body = responseBody;
+        }
+        process.nextTick(next);
+    } catch (error) {
+        next(error);
+    }
 }
 
 export default TaskController;
