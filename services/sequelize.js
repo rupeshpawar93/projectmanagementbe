@@ -24,9 +24,13 @@ sequelize.authenticate().then(async (db) => {
     console.log('Connection has been established successfully.');
     
     ProjectModel.belongsTo(UserModel, { foreignKey: 'created_by'});
-    TaskModel.belongsTo(ProjectModel,  { foreignKey: 'project_id',});
+    TaskModel.belongsTo(ProjectModel,  { foreignKey: 'project_id' , as: 'project'});
     TaskModel.belongsTo(UserModel,  { foreignKey: 'created_by'});
     TaskModel.belongsTo(UserModel,  { foreignKey: 'assigned_to', allowNull: true });
+    ProjectModel.hasMany(TaskModel, {
+        foreignKey: 'project_id',
+        as: 'tasks',  // Ensure the alias matches your include alias in the query
+      });
     ProjectModel.belongsToMany(UserModel, {through: ProjectUserModel, foreignKey: 'project_id'});
     UserModel.belongsToMany(ProjectModel, { through: ProjectUserModel, foreignKey: 'user_id' });
 

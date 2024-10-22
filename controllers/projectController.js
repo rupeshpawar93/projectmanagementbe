@@ -1,7 +1,9 @@
 'use strict'
 
-import { ProjectModel, ProjectUserModel, sequelize } from "../services/sequelize.js";
-import { ResponseBody } from "../utilties/helper.js";
+import { Sequelize } from 'sequelize';
+import { ProjectModel, ProjectUserModel,TaskModel, sequelize } from "../services/sequelize.js";
+import { ResponseBody, SQLQueries } from "../utilties/index.js";
+
 
 const ProjectController = {
     create,
@@ -49,13 +51,9 @@ async function update(req, res, next) {
 async function get(req, res, next) {
     try {
         const { pageNo = 1, pageSize = 10 } = req.query;
-        const response = await ProjectModel.findAll({
-            where: {
-                created_by: req.user
-            },
-            order: [['createdAt', 'DESC']],
-            limit: Number(pageSize),
-            offset: (Number(pageNo) - 1) * Number(pageSize)
+        const response = await sequelize.query(SQLQueries.getAllProjectWithTaskCount, {
+            replacements: { createdBy: req.user, limit: Number(pageSize), offset: Number((pageNo-1) * pageSize) },
+            type: sequelize.QueryTypes.SELECT
         });
 
         const responseBody = new ResponseBody(200, 'Projects fetched successfully', response);
@@ -94,7 +92,6 @@ async function remove(req, res, next) {
                 id: req.params.id
             }
         });
-
         if (response) {
             const responseBody = new ResponseBody(200, 'Project deleted successfully');
             res.body = responseBody;
