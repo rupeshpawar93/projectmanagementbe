@@ -1,6 +1,7 @@
 'use strict'
 
 import { TaskModel } from "../services/sequelize.js";
+import { ResponseBody, SQLQueries } from "../utilties/index.js";
 
 const TaskController = {
     create,
@@ -11,7 +12,7 @@ const TaskController = {
 }
 
 async function create (req,res,next) {
-    const response = await TaskModel.create({...req.body, user_id: req.user });
+    const response = await TaskModel.create({...req.body, created_by: req.user });
     const responseBody = new ResponseBody(200, 'Task Successful created', response)
     res.body = responseBody
     process.nextTick(next)
@@ -31,10 +32,10 @@ async function update(req,res,next) {
 
 async function get (req,res,next) {
     const { pageNo = 1, pageSize = 10 } = req.query;
-    const condition = req.body
+    const {id} = req.params;
     const response = await TaskModel.findAll({
         where: {
-            ...condition
+            project_id: id
         },
         order: [['createdAt', 'DESC']],
         limit: Number(pageSize),
@@ -57,23 +58,19 @@ async function getById (req,res,next) {
 
 
 async function remove(req,res,next) {
-    try {
-        const response = await TaskModel.destroy({
-            where: {
-                id: req.params.id
-            }
-        });
-        if (response) {
-            const responseBody = new ResponseBody(200, 'Task deleted successfully');
-            res.body = responseBody;
-        } else {
-            const responseBody = new ResponseBody(404, 'Task not found');
-            res.body = responseBody;
+    const response = await TaskModel.destroy({
+        where: {
+            id: req.params.id
         }
-        process.nextTick(next);
-    } catch (error) {
-        next(error);
+    });
+    if (response) {
+        const responseBody = new ResponseBody(200, 'Task deleted successfully');
+        res.body = responseBody;
+    } else {
+        const responseBody = new ResponseBody(404, 'Task not found');
+        res.body = responseBody;
     }
+    process.nextTick(next);
 }
 
 export default TaskController;

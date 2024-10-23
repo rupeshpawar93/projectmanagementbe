@@ -22,16 +22,16 @@ export default (sequelize, DataTypes) => {
         allowNull: true
       },
       status: {
-        type: Sequelize.ENUM('Not Started', 'In Progress', 'Completed'),
-        defaultValue: 'Not Started',
+        type: DataTypes.INTEGER,
+        defaultValue: 1,
       },
       priority: {
-        type: Sequelize.ENUM('Low', 'Medium','High'),
-        defaultValue: 'Low',
+        type: DataTypes.INTEGER,
+        defaultValue: 1,
       },
       label: {
-        type: Sequelize.ENUM('Bug', 'Feature','Enhancement'),
-        defaultValue: 'Feature',
+        type: DataTypes.INTEGER,
+        defaultValue: 1,
       }
     });
     return Task;

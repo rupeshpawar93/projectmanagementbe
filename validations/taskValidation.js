@@ -12,5 +12,11 @@ export const TaskValidator = [
                 return true;
             }
             return Promise.reject('targetCompletionDate should be greater then today');
-        })
+        }),
+    body("status").notEmpty().withMessage("Provide task Status").isInt({ min: 1, max: 3 })
+    .withMessage('Value must be an integer between 1 and 3'),
+    body("label").notEmpty().withMessage("Provide task label").isInt({ min: 1, max: 3 })
+    .withMessage('Value must be an integer between 1 and 3'),
+    body("priority").notEmpty().withMessage("Provide task Priority").isInt({ min: 1, max: 3 })
+    .withMessage('Value must be an integer between 1 and 3')
 ]
