@@ -7,14 +7,17 @@ async function assignedProjectMembers(id) {
         include: [
           {
             model: ProjectModel,
-            through: { model: ProjectUserModel }, // Ensure ProjectUserModel is included
-            where: { id: id }, // Filter by projectId
+            through: { model: ProjectUserModel },
+            where: { id: id },
           },
         ],
-        where: { role: 'member' }, // Filter users by role
-        attributes: ['id'], // Only fetch user ids
+        where: { role: 'member' },
+        attributes: ['id','name'],
       });
-    return users.map(user => user.id);
+    return users.reduce((acc, user) => {
+        acc[user.id] = user.name;
+        return acc;
+      }, {});
 }
 
  async  function updateProjectUsers(projectId, selectedUserIds) {
