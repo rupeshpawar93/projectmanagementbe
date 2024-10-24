@@ -33,9 +33,15 @@ async function update(req,res,next) {
 async function get (req,res,next) {
     const { pageNo = 1, pageSize = 10 } = req.query;
     const {id} = req.params;
+    const where = {
+        project_id: id
+    }
+    if(req.role === 'member') {
+        where['assigned_to'] = req.user;
+    }
     const response = await TaskModel.findAll({
         where: {
-            project_id: id
+            ...where
         },
         order: [['createdAt', 'DESC']],
         limit: Number(pageSize),

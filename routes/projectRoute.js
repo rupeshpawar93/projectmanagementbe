@@ -6,12 +6,15 @@ import { verifyToken, projectAccess } from "../middlewares/index.js"
 import roleBasedAccess from '../middlewares/rbac.js';
 
 const ProjectRouter = new Express.Router()
-const { create, update, get, getById, remove } = ProjectController
+const { create, update, get, getById, remove , assignedMembers } = ProjectController
 
-ProjectRouter.get('/', roleBasedAccess(['admin']), validate, routeSanity,  asyncWrapper(get));
+
+ProjectRouter.get('/', validate, routeSanity,  asyncWrapper(get));
 ProjectRouter.get('/:id', roleBasedAccess(['admin']), validate, routeSanity,  asyncWrapper(getById));
+ProjectRouter.get('/assigned-members/:id', roleBasedAccess(['admin']), projectAccess, routeSanity, asyncWrapper(assignedMembers));
 ProjectRouter.post('/', roleBasedAccess(['admin']), ProjectValidator, validate, routeSanity,  asyncWrapper(create));
-ProjectRouter.patch('/:id', roleBasedAccess(['admin']),projectAccess, ProjectValidator, validate, routeSanity,  asyncWrapper(update));
-ProjectRouter.delete('/:id', roleBasedAccess(['admin']),projectAccess, validate, routeSanity, asyncWrapper(remove));
+ProjectRouter.patch('/:id', roleBasedAccess(['admin']), projectAccess, ProjectValidator, validate, routeSanity,  asyncWrapper(update));
+ProjectRouter.delete('/:id', roleBasedAccess(['admin']), projectAccess, routeSanity, asyncWrapper(remove));
+
 
 export default ProjectRouter;

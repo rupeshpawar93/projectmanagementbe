@@ -1,8 +1,9 @@
 'use strict'
 
 import { Sequelize } from 'sequelize';
-import { ProjectModel, ProjectUserModel,TaskModel, sequelize } from "../services/sequelize.js";
+import { ProjectModel, ProjectUserModel,TaskModel, UserModel, sequelize } from "../services/sequelize.js";
 import { ResponseBody, SQLQueries } from "../utilties/index.js";
+import { getMemberList , assignedProjectMembers } from "../repository/index.js";
 
 
 const ProjectController = {
@@ -10,7 +11,8 @@ const ProjectController = {
     update,
     get,
     getById,
-    remove
+    remove,
+    assignedMembers
 }
 
 async function create(req, res, next) {
@@ -51,12 +53,15 @@ async function update(req, res, next) {
 async function get(req, res, next) {
     try {
         const { pageNo = 1, pageSize = 10 } = req.query;
-        const response = await sequelize.query(SQLQueries.getAllProjectWithTaskCount, {
-            replacements: { createdBy: req.user, limit: Number(pageSize), offset: Number((pageNo-1) * pageSize) },
+        let members = {};
+        const project = await sequelize.query(SQLQueries.getAllProjectWithTaskCount(req.role), {
+            replacements: { userId: req.user, limit: Number(pageSize), offset: Number((pageNo-1) * pageSize) },
             type: sequelize.QueryTypes.SELECT
         });
-
-        const responseBody = new ResponseBody(200, 'Projects fetched successfully', response);
+        if(req.role === 'admin') {
+            members = await getMemberList();
+        }
+        const responseBody = new ResponseBody(200, 'Projects fetched successfully', { project, members });
         res.body = responseBody;
         process.nextTick(next);
     } catch (error) {
@@ -71,7 +76,6 @@ async function getById(req, res, next) {
                 id: req.params.id 
             }
         });
-
         if (response) {
             const responseBody = new ResponseBody(200, 'Project fetched successfully', response);
             res.body = responseBody;
@@ -86,12 +90,11 @@ async function getById(req, res, next) {
 }
 
 async function remove(req, res, next) {
-    try {
-        const response = await ProjectModel.destroy({
-            where: {
-                id: req.params.id
-            }
-        });
+    const response = await ProjectModel.destroy({
+        where: {
+            id: req.params.id
+        }
+    });
         if (response) {
             const responseBody = new ResponseBody(200, 'Project deleted successfully');
             res.body = responseBody;
@@ -100,9 +103,14 @@ async function remove(req, res, next) {
             res.body = responseBody;
         }
         process.nextTick(next);
-    } catch (error) {
-        next(error);
-    }
+}
+
+async function assignedMembers(req, res, next) {
+    const { id } = req.params;
+    const projectMembers =  await assignedProjectMembers(id);
+    const responseBody = new ResponseBody(200, 'Assigned User to project fetched successfully', {projectMembers});
+    res.body = responseBody;
+    process.nextTick(next);
 }
 
 export default ProjectController;
