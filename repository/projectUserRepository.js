@@ -17,4 +17,9 @@ async function assignedProjectMembers(id) {
     return users.map(user => user.id);
 }
 
-export { assignedProjectMembers }
+ async  function updateProjectUsers(projectId, selectedUserIds) {
+      const project = await ProjectModel.findByPk(projectId);
+      await project.setUsers(selectedUserIds);
+      console.log('Project users updated successfully!');
+}
+export { assignedProjectMembers, updateProjectUsers }

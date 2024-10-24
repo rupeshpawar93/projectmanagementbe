@@ -1,9 +1,10 @@
 'use strict'
 
 import {getMemberList} from '../repository/userRepository.js';
-import { assignedProjectMembers } from './projectUserRepository.js';
+import { assignedProjectMembers, updateProjectUsers } from './projectUserRepository.js';
 
 export {
     getMemberList,
-    assignedProjectMembers
+    assignedProjectMembers,
+    updateProjectUsers
 }

@@ -3,7 +3,7 @@
 import { Sequelize } from 'sequelize';
 import { ProjectModel, ProjectUserModel,TaskModel, UserModel, sequelize } from "../services/sequelize.js";
 import { ResponseBody, SQLQueries } from "../utilties/index.js";
-import { getMemberList , assignedProjectMembers } from "../repository/index.js";
+import { getMemberList , assignedProjectMembers, updateProjectUsers } from "../repository/index.js";
 
 
 const ProjectController = {
@@ -16,77 +16,63 @@ const ProjectController = {
 }
 
 async function create(req, res, next) {
-    try {
-        const projectData = { ...req.body, created_by: req.user };
-        const project = await ProjectModel.create(projectData);
-        await ProjectUserModel.create({ project_id: project.id, user_id: req.user });
-        const responseBody = new ResponseBody(200, 'Project successfully created', project);
-        res.body = responseBody;
-        process.nextTick(next);
-    } catch (error) {
-        next(error); 
-    }
+    const projectData = { ...req.body, created_by: req.user };
+    const project = await ProjectModel.create(projectData);
+    await ProjectUserModel.create({ project_id: project.id, user_id: req.user });
+    const responseBody = new ResponseBody(200, 'Project successfully created', project);
+    res.body = responseBody;
+    process.nextTick(next);
 }
 
 async function update(req, res, next) {
-    try {
-        const { body, params } = req;
-        const { id } = params;
-        const [updated] = await ProjectModel.update(body, {
-            where: { id }
-        });
-
-        if (updated) {
-            const updatedProject = await ProjectModel.findOne({ where: { id } });
-            const responseBody = new ResponseBody(200, 'Project successfully updated', updatedProject);
-            res.body = responseBody;
-        } else {
-            const responseBody = new ResponseBody(404, 'Project not found');
-            res.body = responseBody;
-        }
-        process.nextTick(next);
-    } catch (error) {
-        next(error);
+    const { body, params } = req;
+    const { assignedMember = [] } = body
+    const { id } = params;
+    const [updated] = await ProjectModel.update(body, {
+        where: { id }
+    });
+    if (updated) {
+        await updateProjectUsers(id, [...assignedMember, req.user]);
+        const updatedProject = await ProjectModel.findOne({ where: { id } });
+        const responseBody = new ResponseBody(200, 'Project successfully updated', updatedProject);
+        res.body = responseBody;
+    } else {
+        const responseBody = new ResponseBody(404, 'Project not found');
+        res.body = responseBody;
     }
+    process.nextTick(next);
+   
 }
 
 async function get(req, res, next) {
-    try {
-        const { pageNo = 1, pageSize = 10 } = req.query;
-        let members = {};
-        const project = await sequelize.query(SQLQueries.getAllProjectWithTaskCount(req.role), {
-            replacements: { userId: req.user, limit: Number(pageSize), offset: Number((pageNo-1) * pageSize) },
-            type: sequelize.QueryTypes.SELECT
-        });
-        if(req.role === 'admin') {
-            members = await getMemberList();
-        }
-        const responseBody = new ResponseBody(200, 'Projects fetched successfully', { project, members });
-        res.body = responseBody;
-        process.nextTick(next);
-    } catch (error) {
-        next(error); 
+    const { pageNo = 1, pageSize = 10 } = req.query;
+    let members = {};
+    const project = await sequelize.query(SQLQueries.getAllProjectWithTaskCount(req.role), {
+        replacements: { userId: req.user, limit: Number(pageSize), offset: Number((pageNo-1) * pageSize) },
+        type: sequelize.QueryTypes.SELECT
+    });
+    if(req.role === 'admin') {
+        members = await getMemberList();
     }
+    const responseBody = new ResponseBody(200, 'Projects fetched successfully', { project, members });
+    res.body = responseBody;
+    process.nextTick(next);
 }
 
 async function getById(req, res, next) {
-    try {
-        const response = await ProjectModel.findOne({
-            where: {
-                id: req.params.id 
-            }
-        });
-        if (response) {
-            const responseBody = new ResponseBody(200, 'Project fetched successfully', response);
-            res.body = responseBody;
-        } else {
-            const responseBody = new ResponseBody(404, 'Project not found');
-            res.body = responseBody;
+    const response = await ProjectModel.findOne({
+        where: {
+            id: req.params.id 
         }
-        process.nextTick(next);
-    } catch (error) {
-        next(error);
+    });
+    if (response) {
+        const responseBody = new ResponseBody(200, 'Project fetched successfully', response);
+        res.body = responseBody;
+    } else {
+        const responseBody = new ResponseBody(404, 'Project not found');
+        res.body = responseBody;
     }
+    process.nextTick(next);
 }
 
 async function remove(req, res, next) {
@@ -95,14 +81,14 @@ async function remove(req, res, next) {
             id: req.params.id
         }
     });
-        if (response) {
-            const responseBody = new ResponseBody(200, 'Project deleted successfully');
-            res.body = responseBody;
-        } else {
-            const responseBody = new ResponseBody(404, 'Project not found');
-            res.body = responseBody;
-        }
-        process.nextTick(next);
+    if (response) {
+        const responseBody = new ResponseBody(200, 'Project deleted successfully');
+        res.body = responseBody;
+    } else {
+        const responseBody = new ResponseBody(404, 'Project not found');
+        res.body = responseBody;
+    }
+    process.nextTick(next);
 }
 
 async function assignedMembers(req, res, next) {
