@@ -29,9 +29,10 @@ sequelize.authenticate().then(async (db) => {
     TaskModel.belongsTo(UserModel,  { foreignKey: 'assigned_to', allowNull: true });
     ProjectModel.hasMany(TaskModel, {
         foreignKey: 'project_id',
-        as: 'tasks',  // Ensure the alias matches your include alias in the query
+        as: 'tasks',
+        onDelete: 'CASCADE'
       });
-    ProjectModel.belongsToMany(UserModel, { through: ProjectUserModel, foreignKey: 'project_id'});
+    ProjectModel.belongsToMany(UserModel, { through: ProjectUserModel, foreignKey: 'project_id', onDelete: 'CASCADE' });
     UserModel.belongsToMany(ProjectModel, { through: ProjectUserModel, foreignKey: 'user_id' });
 
     // Synchronize the model with the database

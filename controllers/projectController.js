@@ -16,9 +16,10 @@ const ProjectController = {
 }
 
 async function create(req, res, next) {
+    const { assignedMember=[]} = req.body;
     const projectData = { ...req.body, created_by: req.user };
     const project = await ProjectModel.create(projectData);
-    await ProjectUserModel.create({ project_id: project.id, user_id: req.user });
+    await updateProjectUsers(project.id, [...assignedMember, req.user]);
     const responseBody = new ResponseBody(200, 'Project successfully created', project);
     res.body = responseBody;
     process.nextTick(next);
@@ -76,12 +77,13 @@ async function getById(req, res, next) {
 }
 
 async function remove(req, res, next) {
-    const response = await ProjectModel.destroy({
-        where: {
-            id: req.params.id
-        }
-    });
-    if (response) {
+    const project = await ProjectModel.findByPk(req.params.id);
+    if (!project) {
+        throw new Error('Project not found');
+    }
+    // Delete the project
+    await project.destroy();
+    if (project) {
         const responseBody = new ResponseBody(200, 'Project deleted successfully');
         res.body = responseBody;
     } else {
