@@ -81,7 +81,6 @@ async function remove(req, res, next) {
     if (!project) {
         throw new Error('Project not found');
     }
-    // Delete the project
     await project.destroy();
     if (project) {
         const responseBody = new ResponseBody(200, 'Project deleted successfully');

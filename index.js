@@ -3,6 +3,7 @@
 import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
+import compression from 'compression';
 import bodyParser from 'body-parser'
 import Routes from './routes/index.js'
 import { configDotenv } from 'dotenv';
@@ -30,6 +31,7 @@ const corsOptions = {
 
 // Middleware Initializations
 app.use(cors(corsOptions))
+app.use(compression());
 app.use(bodyParser.json({ limit: constantVariables.BODY_LIMIT }))
 app.use(bodyParser.urlencoded({ limit: constantVariables.BODY_LIMIT, extended: true }))
 app.use(helmet())
