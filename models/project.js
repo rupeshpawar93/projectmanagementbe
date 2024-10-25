@@ -21,7 +21,7 @@ export default (sequelize, DataTypes) => {
     targetCompletionDate: {
       type: DataTypes.DATE,
       allowNull: true
-  },
+    },
   }, {
     indexes: [
       {

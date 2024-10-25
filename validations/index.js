@@ -5,7 +5,7 @@ import { ProjectValidator } from './projectValidation.js'
 import { TaskValidator } from './taskValidation.js'
 
 export {
-    UserSignInValidator, 
+    UserSignInValidator,
     UserSignUpValidator,
     ProjectValidator,
     TaskValidator

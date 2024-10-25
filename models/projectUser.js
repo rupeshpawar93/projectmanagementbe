@@ -4,29 +4,29 @@ import { DataTypes, Sequelize } from "sequelize";
 
 export default (sequelize, DataTypes) => {
     const ProjectUser = sequelize.define('ProjectUser', {
-    id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-    },
-    project_id: {
-        type: DataTypes.INTEGER,
-        references: {
-        model: 'Project',
-        key: 'id',
+        id: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
         },
-        onDelete: 'CASCADE',
-    },
-    user_id: {
-        type: DataTypes.INTEGER,
-        references: {
-        model: 'User',
-        key: 'id',
+        project_id: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: 'Project',
+                key: 'id',
+            },
+            onDelete: 'CASCADE',
         },
-        onDelete: 'CASCADE',
-    },
+        user_id: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: 'User',
+                key: 'id',
+            },
+            onDelete: 'CASCADE',
+        },
     }, {
-    timestamps: true,
+        timestamps: true,
     }
     );
     return ProjectUser;

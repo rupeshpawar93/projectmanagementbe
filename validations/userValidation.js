@@ -1,4 +1,4 @@
-import {body, query } from 'express-validator';
+import { body, query } from 'express-validator';
 
 export const UserSignInValidator = [
     body("username").notEmpty().withMessage("Provide valid username"),
@@ -11,7 +11,7 @@ export const UserSignUpValidator = [
     body("password").isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
     body('confirmPassword').custom((value, { req }) => {
         if (value !== req.body.password) {
-          return Promise.reject('Passwords do not match');
+            return Promise.reject('Passwords do not match');
         }
         return true;
     })

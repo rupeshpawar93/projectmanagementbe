@@ -1,9 +1,9 @@
 'use strict'
 
 import { Sequelize } from 'sequelize';
-import { ProjectModel, ProjectUserModel,TaskModel, UserModel, sequelize } from "../services/sequelize.js";
+import { ProjectModel, ProjectUserModel, TaskModel, UserModel, sequelize } from "../services/sequelize.js";
 import { ResponseBody, SQLQueries } from "../utilties/index.js";
-import { getMemberList , assignedProjectMembers, updateProjectUsers } from "../repository/index.js";
+import { getMemberList, assignedProjectMembers, updateProjectUsers, findOneProject, findProjectById } from "../repository/index.js";
 
 
 const ProjectController = {
@@ -16,7 +16,7 @@ const ProjectController = {
 }
 
 async function create(req, res, next) {
-    const { assignedMember=[]} = req.body;
+    const { assignedMember = [] } = req.body;
     const projectData = { ...req.body, created_by: req.user };
     const project = await ProjectModel.create(projectData);
     await updateProjectUsers(project.id, [...assignedMember, req.user]);
@@ -34,7 +34,7 @@ async function update(req, res, next) {
     });
     if (updated) {
         await updateProjectUsers(id, [...assignedMember, req.user]);
-        const updatedProject = await ProjectModel.findOne({ where: { id } });
+        const updatedProject = await findOneProject({ where: { id } });
         const responseBody = new ResponseBody(200, 'Project successfully updated', updatedProject);
         res.body = responseBody;
     } else {
@@ -42,17 +42,17 @@ async function update(req, res, next) {
         res.body = responseBody;
     }
     process.nextTick(next);
-   
+
 }
 
 async function get(req, res, next) {
     const { pageNo = 1, pageSize = 10 } = req.query;
     let members = {};
     const project = await sequelize.query(SQLQueries.getAllProjectWithTaskCount(req.role), {
-        replacements: { userId: req.user, limit: Number(pageSize), offset: Number((pageNo-1) * pageSize) },
+        replacements: { userId: req.user, limit: Number(pageSize), offset: Number((pageNo - 1) * pageSize) },
         type: sequelize.QueryTypes.SELECT
     });
-    if(req.role === 'admin') {
+    if (req.role === 'admin') {
         members = await getMemberList();
     }
     const responseBody = new ResponseBody(200, 'Projects fetched successfully', { project, members });
@@ -61,11 +61,8 @@ async function get(req, res, next) {
 }
 
 async function getById(req, res, next) {
-    const response = await ProjectModel.findOne({
-        where: {
-            id: req.params.id 
-        }
-    });
+    const { id } = req.params;
+    const response = await findOneProject({ where: { id } });
     if (response) {
         const responseBody = new ResponseBody(200, 'Project fetched successfully', response);
         res.body = responseBody;
@@ -77,7 +74,7 @@ async function getById(req, res, next) {
 }
 
 async function remove(req, res, next) {
-    const project = await ProjectModel.findByPk(req.params.id);
+    const project = await findUserById(req.params.id);
     if (!project) {
         throw new Error('Project not found');
     }
@@ -94,8 +91,8 @@ async function remove(req, res, next) {
 
 async function assignedMembers(req, res, next) {
     const { id } = req.params;
-    const projectMembers =  await assignedProjectMembers(id);
-    const responseBody = new ResponseBody(200, 'Assigned User to project fetched successfully', {projectMembers});
+    const projectMembers = await assignedProjectMembers(id);
+    const responseBody = new ResponseBody(200, 'Assigned User to project fetched successfully', { projectMembers });
     res.body = responseBody;
     process.nextTick(next);
 }

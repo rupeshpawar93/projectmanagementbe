@@ -22,26 +22,26 @@ const ProjectUserModel = ProjectUser(sequelize, Sequelize.DataTypes);
 
 sequelize.authenticate().then(async (db) => {
     console.log('Connection has been established successfully.');
-    
-    ProjectModel.belongsTo(UserModel, { foreignKey: 'created_by'});
-    TaskModel.belongsTo(ProjectModel,  { foreignKey: 'project_id' , as: 'project'});
-    TaskModel.belongsTo(UserModel,  { foreignKey: 'created_by'});
-    TaskModel.belongsTo(UserModel,  { foreignKey: 'assigned_to', allowNull: true });
+
+    ProjectModel.belongsTo(UserModel, { foreignKey: 'created_by' });
+    TaskModel.belongsTo(ProjectModel, { foreignKey: 'project_id', as: 'project' });
+    TaskModel.belongsTo(UserModel, { foreignKey: 'created_by' });
+    TaskModel.belongsTo(UserModel, { foreignKey: 'assigned_to', allowNull: true });
     ProjectModel.hasMany(TaskModel, {
         foreignKey: 'project_id',
         as: 'tasks',
         onDelete: 'CASCADE'
-      });
+    });
     ProjectModel.belongsToMany(UserModel, { through: ProjectUserModel, foreignKey: 'project_id', onDelete: 'CASCADE' });
     UserModel.belongsToMany(ProjectModel, { through: ProjectUserModel, foreignKey: 'user_id' });
 
     // Synchronize the model with the database
     await sequelize.sync({ alter: true })
     console.log('Models synced with database');
- }).catch((error) => {
+}).catch((error) => {
     console.error('Unable to connect to the database: ', error);
 });
 
 
-export { sequelize, UserModel, ProjectModel, TaskModel, ProjectUserModel} ;
+export { sequelize, UserModel, ProjectModel, TaskModel, ProjectUserModel };
 

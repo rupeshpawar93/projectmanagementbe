@@ -18,14 +18,14 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       unique: true,
       validate: {
-        len: [4, 64], // Ensure usernam]e is at least 8 characters long
+        len: [4, 64],
       },
     },
     password: {
       type: DataTypes.STRING(64),
       allowNull: false,
       validate: {
-        len: [8, 64], // Ensure password is at least 8 characters long
+        len: [8, 64],
       },
     },
     role: {

@@ -1,14 +1,14 @@
 import http from 'http'
-import { validationResult }  from 'express-validator';
+import { validationResult } from 'express-validator';
 
-export const asyncWrapper = (fn)=> {
-    return function (req, res, next) {
-      Promise.resolve(fn(req, res, next)).catch(next);
-    };
+export const asyncWrapper = (fn) => {
+  return function (req, res, next) {
+    Promise.resolve(fn(req, res, next)).catch(next);
+  };
 }
 
 export class ResponseBody {
-  constructor (statusCode, message, data, error) {
+  constructor(statusCode, message, data, error) {
     this.statusCode = statusCode
     this.status = http.STATUS_CODES[statusCode]
     this.msg = message
@@ -27,7 +27,7 @@ export const handleResponse = (request, response, next) => {
   handler(request, response, next)
 }
 
-const sendResponse = (request, response, next)=> {
+const sendResponse = (request, response, next) => {
   let resBody = response.body || {}
   const { statusCode } = resBody
   if (!resBody || !statusCode) {
@@ -49,6 +49,6 @@ export const validate = (req, res, next) => {
 };
 
 export const routeSanity = (request, response, next) => {
-    request.isMatched = true
-    process.nextTick(next)
+  request.isMatched = true
+  process.nextTick(next)
 };

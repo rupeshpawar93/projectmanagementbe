@@ -7,7 +7,7 @@ import { verifyToken } from "../middlewares/auth.js"
 const UserRouter = new Express.Router()
 const { signUp, signIn } = UserController
 
-UserRouter.post('/signin', UserSignInValidator, validate,  routeSanity, asyncWrapper(signIn));
-UserRouter.post('/signup', UserSignUpValidator, validate, routeSanity,  asyncWrapper(signUp));
+UserRouter.post('/signin', UserSignInValidator, validate, routeSanity, asyncWrapper(signIn));
+UserRouter.post('/signup', UserSignUpValidator, validate, routeSanity, asyncWrapper(signUp));
 
 export default UserRouter;
