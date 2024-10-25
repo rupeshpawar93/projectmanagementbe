@@ -11,6 +11,13 @@ const UserController = {
     signUp
 }
 
+/**
+ * create user.
+ * @route POST /signup
+ * @param req - The request body { name, username, password, role }.
+ * @param res - The response object.
+ * @returns user details.
+ */
 async function signUp(req, res, next) {
     const data = await createUser(req.body);
     const responseBody = new ResponseBody(200, 'User Successful created', data)
@@ -18,6 +25,13 @@ async function signUp(req, res, next) {
     process.nextTick(next)
 }
 
+/**
+ * create signin.
+ * @route POST /signin
+ * @param req - The request body { username, password }.
+ * @param res - The response object.
+ * @returns user details with token and role.
+ */
 async function signIn(req, res, next) {
     const { username, password } = req.body;
     const where = { username: req.body.username, active: true }
