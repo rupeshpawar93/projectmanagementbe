@@ -36,7 +36,6 @@ Routes.init = (app) => {
     if (!error) { 
         return process.nextTick(next) 
     }
-    console.log("---error in rout", error);
     const { statusCode = 500, message } = error
     let responseBody
 

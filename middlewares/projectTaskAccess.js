@@ -3,6 +3,8 @@
 import { ProjectModel, ProjectUserModel, TaskModel } from "../services/sequelize.js";
 import { findOneProjectAssignedUser } from "../repository/index.js";
 
+
+/*** here instead of db query redis cache should be use***/
 const projectAccess = async (req, res, next) => {
     const { id } = req.params;
     const project = await ProjectUserModel.findOne({ where: { project_id: id , user_id: req.user } });
@@ -28,7 +30,6 @@ const taskAccess = async (req, res, next) => {
         if (task.created_by !== req.user && task.assigned_to !== req.user) {
             return res.status(403).json({ status: false, msg: 'Permission denied' });
         }
-    
     }
     next();
 }

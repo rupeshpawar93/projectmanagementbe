@@ -10,9 +10,9 @@ const { create, update, get, getById, remove, assignedMembers, projectMetrics } 
 
 
 ProjectRouter.get('/', validate, routeSanity, asyncWrapper(get));
-ProjectRouter.get('/:id', roleBasedAccess(['admin']), projectAccess, validate, routeSanity, asyncWrapper(getById));
 ProjectRouter.get('/assigned-members/:id', roleBasedAccess(['admin']), projectAccess, routeSanity, asyncWrapper(assignedMembers));
-ProjectRouter.get('/metrics', routeSanity, asyncWrapper(projectMetrics));
+ProjectRouter.get('/metrics', roleBasedAccess(['admin', 'member']), routeSanity, asyncWrapper(projectMetrics));
+ProjectRouter.get('/get/:id', roleBasedAccess(['admin']), projectAccess, validate, routeSanity, asyncWrapper(getById));
 ProjectRouter.post('/', roleBasedAccess(['admin']), ProjectValidator, validate, routeSanity, asyncWrapper(create));
 ProjectRouter.patch('/:id', roleBasedAccess(['admin']), projectAccess, ProjectValidator, validate, routeSanity, asyncWrapper(update));
 ProjectRouter.delete('/:id', roleBasedAccess(['admin']), projectAccess, routeSanity, asyncWrapper(remove));

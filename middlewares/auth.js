@@ -11,7 +11,6 @@ function generateToken(payload) {
 // Middleware to verify JWT token
 function verifyToken(req, res, next) {
   if (constantVariables.EXCLUDE_URL_FROM_AUTH.includes(req.url)) {
-    console.log("----hit here");
     next();
   } else {
     const token = req.headers.authorization;
