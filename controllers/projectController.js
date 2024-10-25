@@ -12,7 +12,8 @@ const ProjectController = {
     get,
     getById,
     remove,
-    assignedMembers
+    assignedMembers,
+    projectMetrics
 }
 
 async function create(req, res, next) {
@@ -93,6 +94,16 @@ async function assignedMembers(req, res, next) {
     const { id } = req.params;
     const projectMembers = await assignedProjectMembers(id);
     const responseBody = new ResponseBody(200, 'Assigned User to project fetched successfully', { projectMembers });
+    res.body = responseBody;
+    process.nextTick(next);
+}
+
+async function projectMetrics(req, res, next) {
+    const project = await sequelize.query(SQLQueries.mertricsQueries, {
+        replacements: { userId: req.user },
+        type: sequelize.QueryTypes.SELECT
+    });
+    const responseBody = new ResponseBody(200, 'Assigned User to project fetched successfully', { metrics: project });
     res.body = responseBody;
     process.nextTick(next);
 }
