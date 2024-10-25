@@ -17,7 +17,7 @@ async function update(id, params) {
 async function destroy(id) {
     const task = await TaskModel.destroy({
         where: {
-            id: req.params.id
+            id
         }
     });
     return task;

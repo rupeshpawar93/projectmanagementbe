@@ -23,6 +23,10 @@ async function assignedProjectMembers(id) {
 async function updateProjectUsers(projectId, selectedUserIds) {
   const project = await ProjectModel.findByPk(projectId);
   await project.setUsers(selectedUserIds);
-  console.log('Project users updated successfully!');
 }
-export { assignedProjectMembers, updateProjectUsers }
+
+async function findOne(params) {
+  const response = await ProjectModel.findOne(params);
+  return response
+}
+export { assignedProjectMembers, updateProjectUsers, findOne }
