@@ -4,11 +4,13 @@ import bcrypt from 'bcrypt';
 import { UserModel } from "../services/index.js"
 import { ResponseBody } from "../utilties/index.js"
 import { generateToken } from "../middlewares/auth.js";
-import { createUser, findOneUser } from '../repository/index.js';
+import { createUser, findOneUser , updateUser } from '../repository/index.js';
 
 const UserController = {
     signIn,
-    signUp
+    signUp,
+    update,
+    get
 }
 
 /**
@@ -50,6 +52,28 @@ async function signIn(req, res, next) {
     }
     const token = generateToken({ id: user.id, role: user.role });
     const responseBody = new ResponseBody(200, 'User Signin Successful', { token, isAdmin: user.role === 'admin' ? true : false });
+    res.body = responseBody
+    process.nextTick(next);
+}
+
+async function update(req, res, next) {
+    const { body, user } = req;
+    console.log("-------bofy", body);
+    const useDetail = await UserModel.findByPk(user); // Fetch the user by their ID
+ 
+    useDetail.password = body.password; // Set the new password
+    await useDetail.save(); 
+    const responseBody = new ResponseBody(200, 'User Password Update Successful');
+    res.body = responseBody
+    process.nextTick(next);
+}
+
+async function get(req, res, next) {
+    const { user } = req;
+    const where = { id: user }
+    const userDetail = await findOneUser({ where });
+    delete userDetail.password;
+    const responseBody = new ResponseBody(200, 'User Fetch Successful', userDetail);
     res.body = responseBody
     process.nextTick(next);
 }

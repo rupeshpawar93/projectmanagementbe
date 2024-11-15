@@ -21,6 +21,14 @@ export default (sequelize, DataTypes) => {
         len: [4, 64],
       },
     },
+     email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        isEmail: true,
+      }
+    },
     password: {
       type: DataTypes.STRING(64),
       allowNull: false,
@@ -52,10 +60,10 @@ export default (sequelize, DataTypes) => {
 }
 
 async function hashPassword(user) {
+  console.log("000000000user", user);
   if (user.password) {
     const saltRounds = 10;
     const salt = await bcrypt.genSalt(saltRounds);
     user.password = await bcrypt.hash(user.password, salt);
   }
 }
-

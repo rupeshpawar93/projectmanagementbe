@@ -111,7 +111,7 @@ async function getById(req, res, next) {
  * @returns Project details
  */
 async function remove(req, res, next) {
-    const project = await findUserById(req.params.id);
+    const project = await findProjectById(req.params.id);
     if (!project) {
         throw new Error('Project not found');
     }
@@ -148,7 +148,7 @@ async function assignedMembers(req, res, next) {
  * @returns metrics details
  */
 async function projectMetrics(req, res, next) {
-    const project = await sequelize.query(SQLQueries.mertricsQueries, {
+    const project = await sequelize.query(SQLQueries.mertricsQueries(req.role), {
         replacements: { userId: req.user },
         type: sequelize.QueryTypes.SELECT
     });

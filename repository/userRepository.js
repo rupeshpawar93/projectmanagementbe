@@ -24,5 +24,9 @@ async function getMemberList() {
   return userList;
 }
 
+async function update(where, set) {
+  const response =  await UserModel.update(set, where);
+  return response;
+}
 
-export { getMemberList, create, findOne };
+export { getMemberList, create, findOne, update};

@@ -5,7 +5,7 @@ const { JWT_SECRET } = process.env;
 
 // Middleware to generate JWT token
 function generateToken(payload) {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: 60 * 60 });
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: 60 * 60});
 }
 
 // Middleware to verify JWT token
