@@ -92,9 +92,20 @@ async function get(req, res, next) {
 async function search(req, res, next) {
     const { pageNo = 1, pageSize = 10 } = req.query;
     let members = {};
-    const where = req.body;
-    const project = await sequelize.query(SQLQueries.searchProjectWithTaskCount(req.role, where), {
-        replacements: { userId: req.user, ...where, limit: Number(pageSize), offset: Number((pageNo - 1) * pageSize) },
+    const {where, operator} = req.body;
+    const [key, value] = Object.entries(where)[0];
+    const allowedOperators = ["=", "like"];
+    const allowedKeys = ["p_name", "t_status"];
+    if (!allowedOperators.includes(operator.toLowerCase())) {
+        throw new Error("Invalid operator");
+    }
+    if (!allowedKeys.includes(key)) {
+        throw new Error("Invalid key");
+    }
+    const operatorValue = operator.toLowerCase() === "like" ? "LIKE" : "=";
+    const dynamicValue = operator.toLowerCase() === "like" ? `%${where?.[key] || ''}%` : where?.[key] || '';
+    const project = await sequelize.query(SQLQueries.searchProjectWithTaskCount(req.role, where, operator), {
+        replacements: { userId: req.user, [key]:dynamicValue, limit: Number(pageSize), offset: Number((pageNo - 1) * pageSize) },
         type: sequelize.QueryTypes.SELECT
     });
     if (req.role === 'admin') {
