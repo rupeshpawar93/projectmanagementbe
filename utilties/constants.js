@@ -5,4 +5,5 @@ const constantVariable = {
     BODY_LIMIT: '5mb',
     EXCLUDE_URL_FROM_AUTH: ['/user/signup', '/user/signin']
 }
+
 export default constantVariable;

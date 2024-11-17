@@ -6,7 +6,7 @@ import { verifyToken, projectAccess } from "../middlewares/index.js"
 import roleBasedAccess from '../middlewares/rbac.js';
 
 const ProjectRouter = new Express.Router()
-const { create, update, get, getById, remove, assignedMembers, projectMetrics } = ProjectController
+const { create, update, get, getById, remove, assignedMembers, projectMetrics, search } = ProjectController
 
 
 ProjectRouter.get('/', validate, routeSanity, asyncWrapper(get));
@@ -15,7 +15,7 @@ ProjectRouter.get('/metrics', roleBasedAccess(['admin', 'member']), routeSanity,
 ProjectRouter.get('/get/:id', roleBasedAccess(['admin']), projectAccess, validate, routeSanity, asyncWrapper(getById));
 ProjectRouter.post('/', roleBasedAccess(['admin']), ProjectValidator, validate, routeSanity, asyncWrapper(create));
 ProjectRouter.patch('/:id', roleBasedAccess(['admin']), projectAccess, ProjectValidator, validate, routeSanity, asyncWrapper(update));
+ProjectRouter.post('/search', roleBasedAccess(['admin', 'member']), routeSanity, asyncWrapper(search));
 ProjectRouter.delete('/:id', roleBasedAccess(['admin']), projectAccess, routeSanity, asyncWrapper(remove));
-
 
 export default ProjectRouter;

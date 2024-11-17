@@ -13,7 +13,8 @@ const ProjectController = {
     getById,
     remove,
     assignedMembers,
-    projectMetrics
+    projectMetrics,
+    search
 }
 
 /**
@@ -82,6 +83,27 @@ async function get(req, res, next) {
     process.nextTick(next);
 }
 
+/**
+ * search project.
+ * @route post /project/search
+ * @param res - The response object { project, members }
+ * @returns Project details and user with role member.
+ */
+async function search(req, res, next) {
+    const { pageNo = 1, pageSize = 10 } = req.query;
+    let members = {};
+    const where = req.body;
+    const project = await sequelize.query(SQLQueries.searchProjectWithTaskCount(req.role, where), {
+        replacements: { userId: req.user, ...where, limit: Number(pageSize), offset: Number((pageNo - 1) * pageSize) },
+        type: sequelize.QueryTypes.SELECT
+    });
+    if (req.role === 'admin') {
+        members = await getMemberList();
+    }
+    const responseBody = new ResponseBody(200, 'Projects fetched successfully', { project, members });
+    res.body = responseBody;
+    process.nextTick(next);
+}
 
 /**
  * get project by id.
