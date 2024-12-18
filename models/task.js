@@ -33,6 +33,22 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       defaultValue: 1,
     }
+  }, {
+    indexes: [
+      {
+        name: "titleIndex",
+        unique: true,
+        fields: ['title'],
+      },
+      {
+        name: "statusIndex",
+        fields: ['status'],
+      },
+      {
+        name: "priorityLabelIndex",
+        fields: ['priority', 'label']
+      }
+    ]
   });
   return Task;
 }

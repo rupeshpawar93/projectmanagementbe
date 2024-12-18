@@ -60,7 +60,6 @@ export default (sequelize, DataTypes) => {
 }
 
 async function hashPassword(user) {
-  console.log("000000000user", user);
   if (user.password) {
     const saltRounds = 10;
     const salt = await bcrypt.genSalt(saltRounds);

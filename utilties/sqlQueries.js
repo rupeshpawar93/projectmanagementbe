@@ -4,7 +4,35 @@ export const getAllProjectWithTaskCount = (role) => {
     if (role == 'member') {
         return `SELECT p.id as id, pu.user_id, p.description AS description, p.name AS name, p.targetCompletionDate, pu.user_id, COUNT(t.id) AS taskCount FROM ProjectUsers pu LEFT JOIN Projects p ON pu.project_id = p.id LEFT JOIN Tasks t ON p.id = t.project_id and t.assigned_to = pu.user_id where pu.user_id=:userId GROUP BY p.id, p.name, p.description ORDER BY p.updatedAt DESC;`;
     }
-    return `SELECT p.id as id, pu.user_id, p.description AS description, p.name AS name, p.targetCompletionDate, pu.user_id,  COUNT(t.id) AS taskCount FROM ProjectUsers pu LEFT JOIN Projects p ON pu.project_id = p.id LEFT JOIN Tasks t ON p.id = t.project_id  where pu.user_id= :userId GROUP BY p.id, p.name, p.description ORDER BY p.updatedAt DESC;`;
+    return `SELECT 
+    p.id AS id, 
+    p.name AS name, 
+    p.description AS description, 
+    p.targetCompletionDate, 
+    p.created_by, 
+    GROUP_CONCAT(DISTINCT pu.user_id) AS assigned_users,
+    COUNT(t.id) AS taskCount 
+FROM 
+    ProjectUsers pu 
+LEFT JOIN 
+    Projects p 
+ON 
+    pu.project_id = p.id 
+LEFT JOIN 
+    Tasks t 
+ON 
+    p.id = t.project_id 
+WHERE 
+    p.created_by =:userId 
+    AND pu.user_id != p.created_by
+GROUP BY 
+    p.id, 
+    p.name, 
+    p.description, 
+    p.targetCompletionDate, 
+    p.created_by 
+ORDER BY 
+    p.updatedAt DESC;`
 }
 
 export const searchProjectWithTaskCount = (role, where, operator) => {
